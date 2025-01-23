@@ -1,10 +1,19 @@
 <template lang="">
-  <div></div>
+  <!-- navbar component -->
+  <NavBar :name=userName />
+
+  <div>
+    {{ userName }}
+  </div>
 </template>
 <script>
 import router from "@/router";
+import NavBar from "@/components/NavBar.vue";
 
 export default {
+  components: {
+    NavBar,
+  },
   data() {
     return {
       userName: "",
