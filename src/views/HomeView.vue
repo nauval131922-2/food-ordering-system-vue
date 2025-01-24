@@ -1,6 +1,6 @@
 <template lang="">
   <!-- navbar component -->
-  <NavBar :name=userName />
+  <NavBar :name="userName" :role="roleId" />
 
   <div>
     {{ userName }}
@@ -17,11 +17,13 @@ export default {
   data() {
     return {
       userName: "",
+      roleId: "",
     };
   },
 
   mounted() {
     this.userName = localStorage.getItem("name");
+    this.roleId = localStorage.getItem("role_id");
     if (!this.userName) {
       this.$router.push({ name: "login" });
     }
