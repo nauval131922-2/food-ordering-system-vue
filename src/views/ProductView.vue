@@ -24,8 +24,14 @@
           <td>{{ item.name }}</td>
           <td>{{ `Rp. ${item.price}` }}</td>
           <td>
-            <img
+            <img v-if="item.image"
               :src="url + item.image"
+              alt="item image"
+              style="width: 100px; height: 100px"
+              class="object-fit-cover"
+            />
+            <img v-else
+              src="@/assets/images/no-img.jpg"
               alt="item image"
               style="width: 100px; height: 100px"
               class="object-fit-cover"
@@ -46,6 +52,7 @@
 <script>
 import NavBar from "@/components/NavBar.vue";
 import axios from "axios";
+import router from "@/router";
 
 export default {
   components: {
@@ -85,6 +92,14 @@ export default {
           this.items = response.data.data;
         })
         .catch(function (error) {
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("email");
+            localStorage.removeItem("name");
+            localStorage.removeItem("role_id");
+
+            router.push({ name: "login" });
+          }
           console.log(error);
         });
     },
