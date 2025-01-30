@@ -27,17 +27,27 @@
                 class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3"
               >
                 <div class="card">
-                  <img
+                  <img v-if="item.image"
                     class="card-img-top object-fit-cover"
                     height="250px"
                     :src="url + item.image"
                     alt="Card image cap"
                   />
+                  <img v-else
+                    class="card-img-top object-fit-cover"
+                    height="250px"
+                    src="@/assets/images/no-img.jpg"
+                    alt="Card image cap"
+                  />
+
+
                   <div class="card-body text-center">
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="card-text">{{ `Rp. ${item.price}` }}</p>
                     <p>
-                      <button class="btn btn-success">Order</button>
+                      <button class="btn btn-success" @click="addToCart(item.id)">
+                        Add to Cart
+                      </button>
                     </p>
                   </div>
                 </div>
@@ -45,7 +55,23 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-sm-4 mb-3 bordered">Ordered Item</div>
+        <div class="col-12 col-sm-4 mb-3 order-box">
+          <h2>Order List</h2>
+          <hr />
+          <div class="item-box">
+            <div v-for="order in orders" class="d-flex justify-content-between">
+              <span>{{ order.name }} (x{{ order.qty }})</span>
+              <span>{{ `Rp. ${order.price}` }}</span>
+            </div>
+          </div>
+          <hr />
+          <div class="total-box">
+            <div class="d-flex justify-content-between">
+              <span>Total</span>
+              <span>{{ `Rp. ${orders.reduce((acc, order) => acc + order.price, 0)}` }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +92,7 @@ export default {
       filterredItems: [],
       keyword: "",
       url: "http://127.0.0.1:8000/storage/items/",
+      orders: [],
     };
   },
 
@@ -100,11 +127,37 @@ export default {
         return item.name.toLowerCase().includes(this.keyword.toLowerCase());
       });
     },
+    addToCart(id) {
+      let item = this.filterredItems.filter((item) => item.id == id)[0];
+      let orderItem = Object.assign({}, item);
+
+      let indexOfArrayItem = this.orders.map(e => e.id).indexOf(orderItem.id);
+
+      if (indexOfArrayItem != -1) { //jika item sudah ada di orders, maka qty + 1
+        this.orders[indexOfArrayItem].qty++;
+        // harga total = harga * qty
+        this.orders[indexOfArrayItem].price = this.orders[indexOfArrayItem].price * this.orders[indexOfArrayItem].qty;
+      } else {
+        orderItem.qty = 1;
+        this.orders.push(orderItem);
+        // harga total = harga * qty
+        orderItem.price = orderItem.price * orderItem.qty;
+      }
+    },
   },
 };
 </script>
 <style>
-.bordered {
-  border: 1px solid black;
+.order-box {
+  border-left: 1px solid #ccc;
+}
+
+.item-box {
+  font-size: 24px;
+}
+
+.total-box {
+  font-size: 24px;
+  font-weight: bold;
 }
 </style>
