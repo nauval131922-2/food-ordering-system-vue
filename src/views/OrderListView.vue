@@ -32,7 +32,11 @@
             <td>{{ order.waitress.name }}</td>
             <td>{{ order.cashier ? order.cashier.name : "-" }}</td>
             <td>
-                Detail
+              <RouterLink
+                :to="{ name: 'orderDetail', params: { orderId: order.id } }"
+              >
+                Detail</RouterLink
+              >
             </td>
           </tr>
         </tbody>
@@ -46,51 +50,51 @@ import axios from "axios";
 import router from "@/router";
 
 export default {
-    components: {
-        NavBar,
-    },
-    data() {
-        return {
-            userName: "",
-            roleId: "",
-            orders: [],
-        };
-    },
-    mounted() {
-        this.userName = localStorage.getItem("name");
-        this.roleId = localStorage.getItem("role_id");
+  components: {
+    NavBar,
+  },
+  data() {
+    return {
+      userName: "",
+      roleId: "",
+      orders: [],
+    };
+  },
+  mounted() {
+    this.userName = localStorage.getItem("name");
+    this.roleId = localStorage.getItem("role_id");
 
-        if (!this.userName) {
-            router.push({ name: "login" });
-        }
-
-        this.getOrders();
-    },
-    methods: {
-        getOrders() {
-            axios
-                .get("http://127.0.0.1:8000/api/order", {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token"),
-                    },
-                })
-                .then((response) => {
-                    this.orders = response.data.data;
-                })
-                .catch(function (error) {
-                    if (error.response.status == 401) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("email");
-                        localStorage.removeItem("name");
-                        localStorage.removeItem("role_id");
-
-                        this.$router.push({ name: "login" });
-                    }
-
-                    console.log(error);
-                });
-        },
+    if (!this.userName) {
+      router.push({ name: "login" });
     }
+
+    this.getOrders();
+  },
+  methods: {
+    getOrders() {
+      axios
+        .get("http://127.0.0.1:8000/api/order", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+          this.orders = response.data.data;
+        })
+        .catch(function (error) {
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("email");
+            localStorage.removeItem("name");
+            localStorage.removeItem("role_id");
+
+            this.$router.push({ name: "login" });
+          }
+
+          console.log(error);
+        });
+    },
+  },
 };
 </script>
 <style lang=""></style>
