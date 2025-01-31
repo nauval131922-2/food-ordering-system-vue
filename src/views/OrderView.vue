@@ -93,7 +93,7 @@
             </div>
           </div>
           <div>
-            <button class="btn btn-success mt-3 form-control" @click="createOrder()">Create Order</button>
+            <button class="btn btn-success mt-3 form-control" :disabled=processing @click="createOrder()">{{ processing ? 'Processing Order...' : 'Submit' }}</button>
           </div>
         </div>
       </div>
@@ -119,6 +119,7 @@ export default {
       orders: [],
       customerName: "",
       tableNo: "",
+      processing: false,
     };
   },
 
@@ -204,6 +205,7 @@ export default {
         };
       });
 
+      this.processing = true;
       axios
         .post(
           "http://127.0.0.1:8000/api/order",
@@ -224,11 +226,23 @@ export default {
           this.tableNo = "";
 
           console.log(response);
-          
+
           alert("Order created successfully");
         })
         .catch(function (error) {
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("email");
+            localStorage.removeItem("name");
+            localStorage.removeItem("role_id");
+
+            this.$router.push({ name: "login" });
+          }
+
           console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
         });
     },
   },
