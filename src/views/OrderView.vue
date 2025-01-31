@@ -61,11 +61,11 @@
           <div>
             <div class="mb-3">
               <label class="form-label" id="customerName">Customer Name</label>
-              <input type="text" class="form-control" id="customerName" />
+              <input type="text" class="form-control" id="customerName" v-model="customerName" />
             </div>
             <div class="mb-3">
               <label class="form-label" id="tableNo">Table No.</label>
-              <input type="text" class="form-control" id="tableNo" />
+              <input type="text" class="form-control" id="tableNo" v-model="tableNo" />
             </div>
           </div>
           <hr />
@@ -93,7 +93,7 @@
             </div>
           </div>
           <div>
-            <button class="btn btn-success mt-3 form-control">Order</button>
+            <button class="btn btn-success mt-3 form-control" @click="createOrder()">Create Order</button>
           </div>
         </div>
       </div>
@@ -117,6 +117,8 @@ export default {
       keyword: "",
       url: "http://127.0.0.1:8000/storage/items/",
       orders: [],
+      customerName: "",
+      tableNo: "",
     };
   },
 
@@ -183,6 +185,51 @@ export default {
     removeItem(order) {
       let indexOfArrayItem = this.orders.map(e => e.id).indexOf(order.id);
       this.orders.splice(indexOfArrayItem, 1);
+    },
+    createOrder() {
+      if (this.customerName == "" || this.tableNo == "") {
+        alert("Please fill customer name and table no");
+        return;
+      }
+
+      if (this.orders.length == 0) {
+        alert("Please add item to order");
+        return;
+      }
+
+      let item = this.orders.map(item => {
+        return {
+          'id': item.id,
+          'qty': item.qty,
+        };
+      });
+
+      axios
+        .post(
+          "http://127.0.0.1:8000/api/order",
+          {
+            'customer_name': this.customerName,
+            'table_no': this.tableNo,
+            'items': item,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        )
+        .then((response) => {
+          this.orders = [];
+          this.customerName = "";
+          this.tableNo = "";
+
+          console.log(response);
+          
+          alert("Order created successfully");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };
