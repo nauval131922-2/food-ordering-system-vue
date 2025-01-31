@@ -45,7 +45,7 @@
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="card-text">{{ `Rp. ${item.price}` }}</p>
                     <p>
-                      <button class="btn btn-success" @click="addToCart(item.id)">
+                      <button class="btn btn-success form-control" @click="addToCart(item.id)">
                         Add to Cart
                       </button>
                     </p>
@@ -58,10 +58,31 @@
         <div class="col-12 col-sm-4 mb-3 order-box">
           <h2>Order List</h2>
           <hr />
+          <div>
+            <div class="mb-3">
+              <label class="form-label" id="customerName">Customer Name</label>
+              <input type="text" class="form-control" id="customerName" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label" id="tableNo">Table No.</label>
+              <input type="text" class="form-control" id="tableNo" />
+            </div>
+          </div>
+          <hr />
           <div class="item-box">
-            <div v-for="order in orders" class="d-flex justify-content-between">
-              <span>{{ order.name }} (x{{ order.qty }})</span>
-              <span>{{ `Rp. ${order.price}` }}</span>
+            <div v-for="order in orders" class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>{{ order.name }} (x{{ order.qty }})</span>
+                <span>{{ `Rp. ${order.price}` }}</span>
+              </div>
+              <div>
+                <span style="font-size: 14px" class="text-muted">@ Rp. 20000</span>
+                <div>
+                  <button class="btn btn-outline-info me-1 btn-sm" @click="decreaseItemQty(order)">-</button>
+                  <button class="btn btn-outline-success me-1 btn-sm" @click="increaseItemQty(order)">+</button>
+                  <button class="btn btn-outline-danger btn-sm" @click="removeItem(order)">Remove</button>
+                </div>
+              </div>
             </div>
           </div>
           <hr />
@@ -70,6 +91,9 @@
               <span>Total</span>
               <span>{{ `Rp. ${orders.reduce((acc, order) => acc + order.price, 0)}` }}</span>
             </div>
+          </div>
+          <div>
+            <button class="btn btn-success mt-3 form-control">Order</button>
           </div>
         </div>
       </div>
@@ -130,19 +154,35 @@ export default {
     addToCart(id) {
       let item = this.filterredItems.filter((item) => item.id == id)[0];
       let orderItem = Object.assign({}, item);
-
+      orderItem.pricePerItem = orderItem.price;
       let indexOfArrayItem = this.orders.map(e => e.id).indexOf(orderItem.id);
 
       if (indexOfArrayItem != -1) { //jika item sudah ada di orders, maka qty + 1
         this.orders[indexOfArrayItem].qty++;
         // harga total = harga * qty
-        this.orders[indexOfArrayItem].price = this.orders[indexOfArrayItem].price * this.orders[indexOfArrayItem].qty;
+        this.orders[indexOfArrayItem].price = this.orders[indexOfArrayItem].pricePerItem * this.orders[indexOfArrayItem].qty;
       } else {
         orderItem.qty = 1;
         this.orders.push(orderItem);
         // harga total = harga * qty
         orderItem.price = orderItem.price * orderItem.qty;
       }
+    },
+    decreaseItemQty(order) {
+      let indexOfArrayItem = this.orders.map(e => e.id).indexOf(order.id);
+      if (this.orders[indexOfArrayItem].qty > 1) {
+        this.orders[indexOfArrayItem].qty--;
+        this.orders[indexOfArrayItem].price = this.orders[indexOfArrayItem].pricePerItem * this.orders[indexOfArrayItem].qty;
+      }
+    },
+    increaseItemQty(order) {
+      let indexOfArrayItem = this.orders.map(e => e.id).indexOf(order.id);
+      this.orders[indexOfArrayItem].qty++;
+      this.orders[indexOfArrayItem].price = this.orders[indexOfArrayItem].pricePerItem * this.orders[indexOfArrayItem].qty;
+    },
+    removeItem(order) {
+      let indexOfArrayItem = this.orders.map(e => e.id).indexOf(order.id);
+      this.orders.splice(indexOfArrayItem, 1);
     },
   },
 };
