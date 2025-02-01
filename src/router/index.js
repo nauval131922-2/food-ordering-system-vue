@@ -7,6 +7,7 @@ import ProductUpdateView from '../views/ProductUpdateView.vue'
 import ProductCreateView from '../views/ProductCreateView.vue'
 import OrderListView from '../views/OrderListView.vue'
 import OrderDetailView from '../views/OrderDetailView.vue'
+import OrderReportView from '../views/OrderReportView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/order/:orderId',
       name: 'orderDetail',
       component: OrderDetailView,
+    },
+    {
+      path: '/order-report',
+      name: 'orderReport',
+      component: OrderReportView
     },
   ],
 })

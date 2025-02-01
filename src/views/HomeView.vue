@@ -2,8 +2,8 @@
   <!-- navbar component -->
   <NavBar :name="userName" :role="roleId" />
 
-  <div>
-    {{ userName }}
+  <div class="container">
+    <h2 class="my-5">Hi, {{ userName }}</h2>
   </div>
 </template>
 <script>

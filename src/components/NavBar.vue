@@ -28,6 +28,9 @@
             <li class="nav-item me-3">
               <RouterLink to="/order-list">Order List</RouterLink>
             </li>
+            <li v-if="role == 4" class="nav-item me-3">
+              <RouterLink to="/order-report">Order Report</RouterLink>
+            </li>
             <li class="nav-item">
               <a href="#" @click="logout()">Logout</a>
             </li>
